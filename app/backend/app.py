@@ -45,7 +45,7 @@ from quart import (
 from quart_cors import cors
 
 from approaches.approach import Approach
-from approaches.chatreadretrieveread import ChatReadRetrieveReadApproach
+from approaches.chatreadretrieveread_react import ChatReadRetrieveReadReactApproach
 from approaches.chatreadretrievereadvision import ChatReadRetrieveReadVisionApproach
 from approaches.retrievethenread import RetrieveThenReadApproach
 from approaches.retrievethenreadvision import RetrieveThenReadVisionApproach
@@ -183,7 +183,7 @@ async def ask(auth_claims: Dict[str, Any]):
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
-        if dataclasses.is_dataclass(o) and not isinstance(o, type):
+        if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
         return super().default(o)
 
@@ -587,7 +587,7 @@ async def setup_clients():
         query_speller=AZURE_SEARCH_QUERY_SPELLER,
     )
 
-    current_app.config[CONFIG_CHAT_APPROACH] = ChatReadRetrieveReadApproach(
+    current_app.config[CONFIG_CHAT_APPROACH] = ChatReadRetrieveReadReactApproach(
         search_client=search_client,
         openai_client=openai_client,
         auth_helper=auth_helper,

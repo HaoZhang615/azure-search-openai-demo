@@ -7,7 +7,6 @@ from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 
 from approaches.approach import Approach
 
-
 class ChatApproach(Approach, ABC):
     query_prompt_few_shots: list[ChatCompletionMessageParam] = [
         {"role": "user", "content": "How did crypto do last year?"},
@@ -74,7 +73,7 @@ class ChatApproach(Approach, ABC):
             if query_text.strip() != self.NO_RESPONSE:
                 return query_text
         return user_query
-
+    
     def extract_followup_questions(self, content: str):
         return content.split("<<")[0], re.findall(r"<<([^>>]+)>>", content)
 
@@ -88,8 +87,9 @@ class ChatApproach(Approach, ABC):
         extra_info, chat_coroutine = await self.run_until_final_call(
             messages, overrides, auth_claims, should_stream=False
         )
-        chat_completion_response: ChatCompletion = await chat_coroutine
-        chat_resp = chat_completion_response.model_dump()  # Convert to dict to make it JSON serializable
+        chat_completion_response: ChatCompletion = chat_coroutine
+        # chat_resp = chat_completion_response.model_dump()  # Convert to dict to make it JSON serializable
+        chat_resp = chat_completion_response
         chat_resp = chat_resp["choices"][0]
         chat_resp["context"] = extra_info
         if overrides.get("suggest_followup_questions"):

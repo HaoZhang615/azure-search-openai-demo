@@ -55,7 +55,7 @@ class ChatReadRetrieveReadApproach(ChatApproach):
 
     @property
     def system_message_chat_conversation(self):
-        return """Assistant helps the company employees with their healthcare plan questions, and questions about the employee handbook. Be brief in your answers.
+        return """Assistant helps the business analysts with their questions about the swiss based insurance company Baloise and Helvetia, specifically about their annual reports for 2023 or general insurance conditions on motercycles. Be brief in your answers.
         Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
         For tabular information return it as an html table. Do not return markdown format. If the question is not in English, answer in the language used in the question.
         Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, for example [info1.txt]. Don't combine sources, list each source separately, for example [info1.txt][info2.pdf].
@@ -88,7 +88,6 @@ class ChatReadRetrieveReadApproach(ChatApproach):
         auth_claims: dict[str, Any],
         should_stream: bool = False,
     ) -> tuple[dict[str, Any], Coroutine[Any, Any, Union[ChatCompletion, AsyncStream[ChatCompletionChunk]]]]:
-        seed = overrides.get("seed", None)
         use_text_search = overrides.get("retrieval_mode") in ["text", "hybrid", None]
         use_vector_search = overrides.get("retrieval_mode") in ["vectors", "hybrid", None]
         use_semantic_ranker = True if overrides.get("semantic_ranker") else False
@@ -143,7 +142,6 @@ class ChatReadRetrieveReadApproach(ChatApproach):
             max_tokens=query_response_token_limit,  # Setting too low risks malformed JSON, setting too high may affect performance
             n=1,
             tools=tools,
-            seed=seed,
         )
 
         query_text = self.get_search_query(chat_completion, original_user_query)
@@ -239,6 +237,5 @@ class ChatReadRetrieveReadApproach(ChatApproach):
             max_tokens=response_token_limit,
             n=1,
             stream=should_stream,
-            seed=seed,
         )
         return (extra_info, chat_coroutine)
